@@ -1,13 +1,17 @@
-FROM node:9-alpine
+### builder
+FROM node:9-alpine as builder
 
 WORKDIR /usr/app
 
 COPY package.json .
-
-RUN npm install
-
+RUN npm install 
 COPY src src
-
 COPY public public
 
-CMD ["npm","start"]
+RUN npm run build
+
+
+### server
+FROM nginx
+
+COPY --from=builder /usr/app/build /usr/share/nginx/html
